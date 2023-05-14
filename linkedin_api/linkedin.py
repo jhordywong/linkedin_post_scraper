@@ -98,7 +98,7 @@ class Linkedin(object):
         url = f"{self.client.API_BASE_URL if not base_request else self.client.LINKEDIN_BASE_URL}{uri}"
         return self.client.session.post(url, **kwargs)
 
-    def get_profile_posts(self, public_id=None, urn_id=None, post_count=10):
+    def get_profile_posts(self, public_id=None, urn_id=None, post_count=10, start=0):
         """
         get_profile_posts: Get profile posts
 
@@ -743,10 +743,10 @@ class Linkedin(object):
         :return: List of company update objects
         :rtype: list
         """
-        
+
         if results is None:
             results = []
-        
+
         params = {
             "companyUniversalName": {public_id or urn_id},
             "q": "companyFeedByUniversalName",
@@ -792,10 +792,10 @@ class Linkedin(object):
         :return: List of profile update objects
         :rtype: list
         """
-        
+
         if results is None:
             results = []
-            
+
         params = {
             "profileId": {public_id or urn_id},
             "q": "memberShareFeed",
@@ -975,10 +975,7 @@ class Linkedin(object):
                 "originToken": str(uuid.uuid4()),
                 "value": {
                     "com.linkedin.voyager.messaging.create.MessageCreate": {
-                        "attributedBody": {
-                            "text": message_body,
-                            "attributes": [],
-                        },
+                        "attributedBody": {"text": message_body, "attributes": [],},
                         "attachments": [],
                     }
                 },
@@ -1001,9 +998,7 @@ class Linkedin(object):
                 "conversationCreate": message_event,
             }
             res = self._post(
-                f"/messaging/conversations",
-                params=params,
-                data=json.dumps(payload),
+                f"/messaging/conversations", params=params, data=json.dumps(payload),
             )
 
         return res.status_code != 201
@@ -1058,10 +1053,7 @@ class Linkedin(object):
             "q": "receivedInvitation",
         }
 
-        res = self._fetch(
-            "/relationships/invitationViews",
-            params=params,
-        )
+        res = self._fetch("/relationships/invitationViews", params=params,)
 
         if res.status_code != 200:
             return []
@@ -1170,10 +1162,7 @@ class Linkedin(object):
         res = self._post(
             "/li/track",
             base_request=True,
-            headers={
-                "accept": "*/*",
-                "content-type": "text/plain;charset=UTF-8",
-            },
+            headers={"accept": "*/*", "content-type": "text/plain;charset=UTF-8",},
             data=json.dumps(payload),
         )
 
