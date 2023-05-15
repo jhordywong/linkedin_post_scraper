@@ -71,11 +71,9 @@ class LinkedInPostScraper:
                 public_id = linkedin_url.split("/")[idx]
                 logger.info(f"SCRAPING POST FOR ACCOUNT WITH PUBLIC ID {public_id}")
                 scrapped_post_raw = client.get_profile_posts(
-                    public_id=public_id, post_count=2000,
+                    public_id=public_id, post_count=100,
                 )
                 prefix_post_url = "https://www.linkedin.com/feed/update/"
-                with open(f"test2.json", "w") as f:
-                    json.dump(scrapped_post_raw, f)
                 scrapped_post_clean = [
                     {
                         "name": s["actor"]["name"]["text"],
@@ -86,6 +84,12 @@ class LinkedInPostScraper:
                             s["actor"]["subDescription"]["text"]
                         ),
                         "post_url": prefix_post_url + s["updateMetadata"]["urn"],
+                        "number_of_likes": s["socialDetail"][
+                            "totalSocialActivityCounts"
+                        ]["numLikes"],
+                        "number_of_comments": s["socialDetail"][
+                            "totalSocialActivityCounts"
+                        ]["numComments"],
                     }
                     for s in scrapped_post_raw
                 ]
